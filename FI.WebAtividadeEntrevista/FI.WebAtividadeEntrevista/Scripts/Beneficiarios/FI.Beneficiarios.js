@@ -1,62 +1,58 @@
 window.listaBeneficiariosCliente = window.listaBeneficiariosCliente || [];
 
-function BeneficiariosModal() {
-    var random = Math.random().toString().replace('.', '');
-    var texto = `<div id="${random}" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title">Beneficiarios</h4>
-                </div>
-                <div class="modal-body">
-                    <form id="formBeneficiario">
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <label for="CPFBeneficiario">CPF:</label>
-                                    <input required="required" type="text" class="form-control" id="CPFBeneficiario" name="CPF" placeholder="Ex.: 010.011.111-00" maxlength="14">
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <label for="NomeBeneficiario">Nome:</label>
-                                    <input required="required" type="text" class="form-control" id="NomeBeneficiario" name="Nome" placeholder="Ex.: Maria">
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label>&nbsp;</label>
-                                    <button type="submit" class="btn btn-sm btn-success form-control">Incluir</button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <table class="table" id="gridBeneficiarios">
-                                <thead>
-                                    <tr>
-                                        <th>CPF</th>
-                                        <th>Nome</th>
-                                        <th>Acoes</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
-                </div>
-            </div>
-        </div>
-    </div>`;
+$(document).ready(function () {
+    $('#CPFBeneficiario').on('input', function () {
+        $(this).val(formatarCPF($(this).val()));
+    });
 
-    $('body').append(texto);
-    
+    $('#formBeneficiario').submit(function (e) {
+        e.preventDefault();
+        var cpf = $('#CPFBeneficiario').val();
+        var nome = $('#NomeBeneficiario').val();
+
+        if (!validarCPF(cpf)) {
+            ModalDialog("CPF invalido", "Por favor, informe um CPF valido.");
+            return;
+        }
+
+        var cpfDuplicado = false;
+        $('#gridBeneficiarios tbody tr').each(function () {
+            if ($(this).find('td:eq(0)').text() === cpf) {
+                cpfDuplicado = true;
+                return false;
+            }
+        });
+        if (cpfDuplicado) {
+            ModalDialog("CPF ja incluido", "Este CPF ja esta na lista de beneficiarios.");
+            return;
+        }
+
+        var newRow = '<tr data-cpf="' + cpf + '">\
+            <td>' + cpf + '</td>\
+            <td>' + nome + '</td>\
+            <td>\
+                <button class="btn btn-sm btn-primary btn-alterar">Alterar</button>\
+                <button class="btn btn-sm btn-danger btn-excluir">Excluir</button>\
+            </td>\
+        </tr>';
+        $('#gridBeneficiarios tbody').append(newRow);
+        $('#CPFBeneficiario').val('');
+        $('#NomeBeneficiario').val('');
+    });
+
+    $('#gridBeneficiarios').on('click', '.btn-excluir', function () {
+        $(this).closest('tr').remove();
+    });
+
+    $('#gridBeneficiarios').on('click', '.btn-alterar', function () {
+        var row = $(this).closest('tr');
+        var cpf = row.find('td:eq(0)').text();
+        var nome = row.find('td:eq(1)').text();
+        $('#CPFBeneficiario').val(cpf);
+        $('#NomeBeneficiario').val(nome);
+        row.remove();
+    });
+
     function renderizarGridBeneficiarios() {
         var tbody = $('#gridBeneficiarios tbody');
         tbody.empty();
@@ -67,75 +63,22 @@ function BeneficiariosModal() {
                 <td>' + ben.Nome + '</td>\
                 <td>\
                     <button class="btn btn-sm btn-primary btn-alterar">Alterar</button>\
-                    <button class="btn btn-sm btn-primary btn-excluir">Excluir</button>\
+                    <button class="btn btn-sm btn-danger btn-excluir">Excluir</button>\
                 </td>\
             </tr>';
             tbody.append(newRow);
         }
     }
     renderizarGridBeneficiarios();
-
-    $('#CPFBeneficiario').on('input', function() {
-        $(this).val(formatarCPF($(this).val()));
-    });
-
-    $('#formBeneficiario').submit(function(e) {
-        e.preventDefault();
-        
-        var cpf = $('#CPFBeneficiario').val();
-        var nome = $('#NomeBeneficiario').val();
-        var cpfDuplicadoNoGrid = false;
-
-        for (var i = 0; i < window.listaBeneficiariosCliente.length; i++) {
-            if (window.listaBeneficiariosCliente[i].CPF === cpf) {
-                cpfDuplicadoNoGrid = true;
-                break;
-            }
-        }
-        if (cpfDuplicadoNoGrid) {
-            ModalDialog("CPF ja incluido", "Este CPF ja esta na lista de beneficiarios.");
-            return;
-        }
-
-        if (!validarCPF(cpf)) {
-            ModalDialog("CPF invalido", "Por favor, informe um CPF valido.");
-            return;
-        }
-
-        window.listaBeneficiariosCliente.push({ CPF: cpf, Nome: nome });
-        renderizarGridBeneficiarios();
-        $('#CPFBeneficiario').val('');
-        $('#NomeBeneficiario').val('');
-    });
-
-    $('#gridBeneficiarios').on('click', '.btn-excluir', function() {
-        var row = $(this).closest('tr');
-        var cpf = row.find('td:eq(0)').text();
-        window.listaBeneficiariosCliente = window.listaBeneficiariosCliente.filter(function(ben) {
-            return ben.CPF !== cpf;
-        });
-        renderizarGridBeneficiarios();
-    });
-
-    $('#gridBeneficiarios').on('click', '.btn-alterar', function() {
-        var row = $(this).closest('tr');
-        var cpf = row.find('td:eq(0)').text();
-        var nome = row.find('td:eq(1)').text();
-        $('#CPFBeneficiario').val(cpf);
-        $('#NomeBeneficiario').val(nome);
-        window.listaBeneficiariosCliente = window.listaBeneficiariosCliente.filter(function(ben) {
-            return ben.CPF !== cpf;
-        });
-        renderizarGridBeneficiarios();
-    });
-
-    $('#' + random).on('hidden.bs.modal', function () {
-        $('#' + random).remove();
-    });
-
-    $('#' + random).modal('show');
-}
+});
 
 function getBeneficiariosData() {
-    return window.listaBeneficiariosCliente.slice();
+    var beneficiarios = [];
+    $('#gridBeneficiarios tbody tr').each(function () {
+        beneficiarios.push({
+            CPF: $(this).find('td:eq(0)').text(),
+            Nome: $(this).find('td:eq(1)').text()
+        });
+    });
+    return beneficiarios;
 }

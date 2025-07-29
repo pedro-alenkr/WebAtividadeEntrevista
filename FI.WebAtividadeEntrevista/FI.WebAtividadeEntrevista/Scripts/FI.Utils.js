@@ -11,6 +11,32 @@ function formatarCPF(input) {
     return v;
 }
 
+function formatarTelefone(input) {
+    var v = input.replace(/\D/g, '').slice(0, 11);
+
+    if (v.length === 0) return '';
+
+    v = v.replace(/^(\d{0,2})/, '($1')
+        .replace(/(\(\d{2})(\d{0,5})/, '$1) $2');
+
+    if (v.length > 10) {
+        v = v.replace(/(\(\d{2}\)\s\d{5})(\d{1,4})/, '$1-$2');
+    } else {
+        v = v.replace(/(\(\d{2}\)\s\d{4})(\d{1,4})/, '$1-$2');
+    }
+
+    return v.trim();
+}
+
+function formatarCEP(input) {
+    var v = input.replace(/\D/g, '');
+    if (v.length > 8) v = v.slice(0, 8);
+    if (v.length > 5) {
+        v = v.replace(/(\d{5})(\d{1,3})/, '$1-$2');
+    }
+    return v;
+}
+
 function calcularDigito(cpf, fator) {
     let soma = 0;
     for (let i = 0; i < fator - 1; i++) {
@@ -37,7 +63,7 @@ function ModalDialog(titulo, texto) {
         '        <div class="modal-dialog">                                                                                 ' +
         '            <div class="modal-content">                                                                            ' +
         '                <div class="modal-header">                                                                         ' +
-        '                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>         ' +
+        '                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>         ' +
         '                    <h4 class="modal-title">' + titulo + '</h4>                                                    ' +
         '                </div>                                                                                             ' +
         '                <div class="modal-body">                                                                           ' +

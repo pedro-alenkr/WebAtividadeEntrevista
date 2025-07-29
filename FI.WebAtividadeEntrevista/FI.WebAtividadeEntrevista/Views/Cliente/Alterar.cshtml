@@ -8,7 +8,6 @@
         var obj = @Html.Raw(Json.Encode(Model));
         var urlRetorno = '@Url.Action("Index", "Cliente", new { area = "" })';
     </script>
-    @Scripts.Render("~/bundles/utils")
     @Scripts.Render("~/bundles/altClientes")
     @Scripts.Render("~/bundles/beneficiarios")
 }

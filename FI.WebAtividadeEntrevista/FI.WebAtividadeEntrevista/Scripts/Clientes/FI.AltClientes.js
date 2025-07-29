@@ -2,6 +2,12 @@
     $('#CPF').on('input', function () {
         $(this).val(formatarCPF($(this).val()));
     });
+    $('#Telefone').on('input', function () {
+        $(this).val(formatarTelefone($(this).val()));
+    });
+    $('#CEP').on('input', function () {
+        $(this).val(formatarCEP($(this).val()));
+    });
 
     if (obj) {
         $('#formCadastro #Nome').val(obj.Nome);

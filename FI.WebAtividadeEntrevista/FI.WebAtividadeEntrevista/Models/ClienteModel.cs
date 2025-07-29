@@ -74,5 +74,9 @@ namespace WebAtividadeEntrevista.Models
         [RegularExpression(@"^\d{3}\.?\d{3}\.?\d{3}\-?\d{2}$", ErrorMessage = "Digite um CPF válido")]
         public string CPF { get; set; }
 
+        /// <summary>
+        /// Lista de Beneficiários
+        /// </summary>
+        public List<BeneficiarioModel> Beneficiarios { get; set; }
     }    
 }

@@ -17,7 +17,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="CPF">CPF:</label>
-                <input required="required" type="text" class="form-control" id="CPF" name="CPF" placeholder="Ex.: 010.011.111-00" maxlength="255">
+                <input required="required" type="text" class="form-control" id="CPF" name="CPF" placeholder="Ex.: 010.011.111-00" maxlength="14">
             </div>
         </div>
         <div class="col-md-6">
@@ -26,7 +26,6 @@
                 <input required="required" type="text" class="form-control" id="Nacionalidade" name="Nacionalidade" placeholder="Ex.: brasileira" maxlength="50">
             </div>
         </div>
-
     </div>
     <div class="row">
         <div class="col-md-4">
@@ -52,7 +51,6 @@
             </div>
         </div>
     </div>
-
     <div class="row">
         <div class="col-md-12">
             <div class="form-group">
@@ -61,7 +59,6 @@
             </div>
         </div>
     </div>
-
     <div class="row">
         <div class="col-md-6">
             <div class="form-group">
@@ -81,7 +78,7 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="pull-left">
-                <button type="button" class="btn btn-sm btn-primary" onclick="BeneficiariosModal()">Beneficiários</button>
+                <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#beneficiariosModal">Beneficiários</button>
             </div>
             <div class="pull-right">
                 <button type="submit" class="btn btn-sm btn-success">Salvar</button>
@@ -91,8 +88,4 @@
     </div>
 </form>
 
-@section Scripts {
-    @Scripts.Render("~/bundles/utils")
-    @Scripts.Render("~/bundles/clientes")
-    @Scripts.Render("~/bundles/beneficiarios")
-}
+@Html.Partial("~/Views/Beneficiario/BeneficiarioModal.cshtml")
