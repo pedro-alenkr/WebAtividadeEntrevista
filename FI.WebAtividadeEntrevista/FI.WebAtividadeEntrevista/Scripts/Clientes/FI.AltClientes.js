@@ -1,5 +1,9 @@
 ﻿
 $(document).ready(function () {
+    $('#CPF').on('input', function () {
+        $(this).val(formatarCPF($(this).val()));
+    });
+
     if (obj) {
         $('#formCadastro #Nome').val(obj.Nome);
         $('#formCadastro #CEP').val(obj.CEP);
@@ -10,10 +14,18 @@ $(document).ready(function () {
         $('#formCadastro #Cidade').val(obj.Cidade);
         $('#formCadastro #Logradouro').val(obj.Logradouro);
         $('#formCadastro #Telefone').val(obj.Telefone);
+        $('#formCadastro #CPF').val(obj.CPF);
     }
 
     $('#formCadastro').submit(function (e) {
         e.preventDefault();
+
+        let valido = validarCPF($(this).find("#CPF").val())
+
+        if (!valido) {
+            ModalDialog("CPF inválido", "Por favor, informe um CPF válido.");
+            return false;
+        }
         
         $.ajax({
             url: urlPost,
@@ -27,7 +39,8 @@ $(document).ready(function () {
                 "Estado": $(this).find("#Estado").val(),
                 "Cidade": $(this).find("#Cidade").val(),
                 "Logradouro": $(this).find("#Logradouro").val(),
-                "Telefone": $(this).find("#Telefone").val()
+                "Telefone": $(this).find("#Telefone").val(),
+                "CPF": $(this).find("#CPF").val()
             },
             error:
             function (r) {
