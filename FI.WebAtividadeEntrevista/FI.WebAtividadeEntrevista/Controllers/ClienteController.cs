@@ -132,6 +132,7 @@ namespace WebAtividadeEntrevista.Controllers
             
             }
 
+            @ViewBag.Id = model.Id;
             return View(model);
         }
 
