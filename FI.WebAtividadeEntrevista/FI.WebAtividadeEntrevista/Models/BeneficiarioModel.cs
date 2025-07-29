@@ -16,7 +16,6 @@ namespace WebAtividadeEntrevista.Models
         /// <summary>
         /// Id do Cliente
         /// </summary>
-        [Required]
         public long IdCliente { get; set; }
 
         /// <summary>

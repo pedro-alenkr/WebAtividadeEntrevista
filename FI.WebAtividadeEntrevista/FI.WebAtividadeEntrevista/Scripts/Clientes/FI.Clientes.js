@@ -1,5 +1,4 @@
-﻿
-$(document).ready(function () {
+﻿$(document).ready(function () {
     $('#CPF').on('input', function () {
         $(this).val(formatarCPF($(this).val()));
     });
@@ -14,6 +13,8 @@ $(document).ready(function () {
             return false;
         }
 
+        let beneficiarios = getBeneficiariosData();
+
         $.ajax({
             url: urlPost,
             method: "POST",
@@ -27,7 +28,8 @@ $(document).ready(function () {
                 "Cidade": $(this).find("#Cidade").val(),
                 "Logradouro": $(this).find("#Logradouro").val(),
                 "Telefone": $(this).find("#Telefone").val(),
-                "CPF": $(this).find("#CPF").val()
+                "CPF": $(this).find("#CPF").val(),
+                "beneficiarios": beneficiarios
             },
             error:
             function (r) {
@@ -43,4 +45,18 @@ $(document).ready(function () {
             }
         });
     })
+    
+    if (typeof beneficiarios !== 'undefined' && beneficiarios) {
+        beneficiarios.forEach(function(ben) {
+            let newRow = `<tr data-cpf="${ben.CPF}>
+                <td>${ben.CPF}</td>
+                <td>${ben.Nome}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary btn-alterar">Alterar</button>
+                    <button class="btn btn-sm btn-danger btn-excluir">Excluir</button>
+                </td>
+            </tr>`;
+            $('#gridBeneficiarios tbody').append(newRow);
+        });
+    }
 })

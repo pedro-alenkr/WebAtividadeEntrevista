@@ -12,30 +12,6 @@ namespace WebAtividadeEntrevista.Controllers
 {
     public class BeneficiarioController : Controller
     {
-        public ActionResult Index()
-        {
-            return PartialView();
-        }
-
-        [HttpGet]
-        public JsonResult VerificarExistencia(string cpf)
-        {
-            BoBeneficiario bo = new BoBeneficiario();
-
-            try
-            {
-                bool existe = bo.VerificarExistencia(cpf);
-
-                if (!existe)
-                    return Json(new { Result = "OK" });
-                else
-                    return Json(new { Result = "NOK" });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { Result = "ERROR", Message = ex.Message });
-            }
-        }
 
         [HttpPost]
         public JsonResult Excluir(long id)

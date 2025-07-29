@@ -17,6 +17,15 @@ namespace FI.AtividadeEntrevista.BLL
             DAL.DaoBeneficiario ben = new DAL.DaoBeneficiario();
             return ben.Incluir(beneficiario);
         }
+        /// <summary>
+        /// Altera um beneficiario
+        /// </summary>
+        /// <param name="beneficiario">Objeto de beneficiario</param>
+        public void Alterar(DML.Beneficiario beneficiario)
+        {
+            DAL.DaoBeneficiario ben = new DAL.DaoBeneficiario();
+            ben.Alterar(beneficiario);
+        }
 
         /// <summary>
         /// VerificaExistencia

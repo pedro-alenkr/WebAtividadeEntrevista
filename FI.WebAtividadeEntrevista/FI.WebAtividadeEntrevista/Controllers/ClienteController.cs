@@ -16,16 +16,16 @@ namespace WebAtividadeEntrevista.Controllers
             return View();
         }
 
-
         public ActionResult Incluir()
         {
             return View();
         }
 
         [HttpPost]
-        public JsonResult Incluir(ClienteModel model)
+        public JsonResult Incluir(ClienteModel model, List<BeneficiarioModel> beneficiarios)
         {
             BoCliente bo = new BoCliente();
+            BoBeneficiario boBeneficiario = new BoBeneficiario();
             
             if (!this.ModelState.IsValid)
             {
@@ -58,16 +58,29 @@ namespace WebAtividadeEntrevista.Controllers
                     CPF = model.CPF
                 });
 
+                if (beneficiarios != null)
+                {
+                    foreach (var ben in beneficiarios)
+                    {
+                        boBeneficiario.Incluir(new Beneficiario
+                        {
+                            IdCliente = model.Id,
+                            Nome = ben.Nome,
+                            CPF = ben.CPF
+                        });
+                    }
+                }
            
                 return Json("Cadastro efetuado com sucesso");
             }
         }
 
         [HttpPost]
-        public JsonResult Alterar(ClienteModel model)
+        public JsonResult Alterar(ClienteModel model, List<BeneficiarioModel> beneficiarios)
         {
             BoCliente bo = new BoCliente();
-       
+            BoBeneficiario boBeneficiario = new BoBeneficiario();
+
             if (!this.ModelState.IsValid)
             {
                 List<string> erros = (from item in ModelState.Values
@@ -79,7 +92,6 @@ namespace WebAtividadeEntrevista.Controllers
             }
             else
             {
-
                 if (bo.VerificarExistencia(model.CPF))
                 {
                     Response.StatusCode = 400;
@@ -100,7 +112,31 @@ namespace WebAtividadeEntrevista.Controllers
                     Telefone = model.Telefone,
                     CPF = model.CPF
                 });
-                               
+
+                var beneficiariosAtuais = boBeneficiario.Listar(model.Id);
+
+                if (beneficiarios != null)
+                {
+                    foreach (var ben in beneficiarios)
+                    {
+                        var existente = beneficiariosAtuais.FirstOrDefault(b => b.CPF == ben.CPF);
+                        if (existente == null)
+                        {
+                            boBeneficiario.Incluir(new Beneficiario
+                            {
+                                IdCliente = model.Id,
+                                Nome = ben.Nome,
+                                CPF = ben.CPF
+                            });
+                        }
+                        else if (existente.Nome != ben.Nome)
+                        {
+                            existente.Nome = ben.Nome;
+                            boBeneficiario.Alterar(existente);
+                        }
+                    }
+                }
+
                 return Json("Cadastro alterado com sucesso");
             }
         }
@@ -109,6 +145,7 @@ namespace WebAtividadeEntrevista.Controllers
         public ActionResult Alterar(long id)
         {
             BoCliente bo = new BoCliente();
+            BoBeneficiario boBeneficiario = new BoBeneficiario();
             Cliente cliente = bo.Consultar(id);
             Models.ClienteModel model = null;
 
@@ -129,10 +166,12 @@ namespace WebAtividadeEntrevista.Controllers
                     CPF = cliente.CPF
                 };
 
-            
+
+                var beneficiarios = boBeneficiario.Listar(id);
+                ViewBag.Beneficiarios = beneficiarios;
+                ViewBag.Id = model.Id;
             }
 
-            @ViewBag.Id = model.Id;
             return View(model);
         }
 
@@ -154,7 +193,6 @@ namespace WebAtividadeEntrevista.Controllers
 
                 List<Cliente> clientes = new BoCliente().Pesquisa(jtStartIndex, jtPageSize, campo, crescente.Equals("ASC", StringComparison.InvariantCultureIgnoreCase), out qtd);
 
-                //Return result to jTable
                 return Json(new { Result = "OK", Records = clientes, TotalRecordCount = qtd });
             }
             catch (Exception ex)
