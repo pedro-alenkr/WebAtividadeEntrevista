@@ -32,22 +32,5 @@ namespace WebAtividadeEntrevista.Controllers
                 return Json(new { Result = "ERROR", Message = ex.Message });
             }
         }
-
-        [HttpGet]
-        public JsonResult Listar(long id)
-        {
-            BoBeneficiario bo = new BoBeneficiario();
-
-            try
-            {
-                List<Beneficiario> beneficiarios = bo.Listar(id);
-
-                return Json(new { Result = "OK", Records = beneficiarios });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { Result = "ERROR", Message = ex.Message });
-            }
-        }
     }
 }

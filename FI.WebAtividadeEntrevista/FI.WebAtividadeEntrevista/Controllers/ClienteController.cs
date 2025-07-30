@@ -122,7 +122,7 @@ namespace WebAtividadeEntrevista.Controllers
                     
                     foreach (BeneficiarioModel beneficiario in model.Beneficiarios)
                     {
-                        Beneficiario existente = beneficiariosAtuais.FirstOrDefault(b => b.CPF == beneficiario.CPF);
+                        Beneficiario existente = beneficiariosAtuais.FirstOrDefault(ben => ben.CPF == beneficiario.CPF);
                         if (existente == null)
                         {
                             boBeneficiario.Incluir(new Beneficiario
@@ -170,10 +170,15 @@ namespace WebAtividadeEntrevista.Controllers
                     CPF = cliente.CPF
                 };
 
-
-                var beneficiarios = boBeneficiario.Listar(id);
-                ViewBag.Beneficiarios = beneficiarios;
-                ViewBag.Id = model.Id;
+                List<Beneficiario> beneficiarios = boBeneficiario.Listar(id);
+                
+                model.Beneficiarios = beneficiarios.Select(b => new BeneficiarioModel 
+                { 
+                    Id = b.Id,
+                    IdCliente = b.IdCliente,
+                    Nome = b.Nome,
+                    CPF = b.CPF
+                }).ToList();
             }
 
             return View(model);
