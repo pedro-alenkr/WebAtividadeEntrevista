@@ -1,11 +1,13 @@
 ﻿using FI.AtividadeEntrevista.BLL;
-using WebAtividadeEntrevista.Models;
+using FI.AtividadeEntrevista.DML;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using FI.AtividadeEntrevista.DML;
+using System.Web.UI.WebControls;
+using WebAtividadeEntrevista.Models;
 
 namespace WebAtividadeEntrevista.Controllers
 {
@@ -22,7 +24,7 @@ namespace WebAtividadeEntrevista.Controllers
         }
 
         [HttpPost]
-        public JsonResult Incluir(ClienteModel model, List<BeneficiarioModel> beneficiarios)
+        public JsonResult Incluir(ClienteModel model)
         {
             BoCliente bo = new BoCliente();
             BoBeneficiario boBeneficiario = new BoBeneficiario();
@@ -58,25 +60,25 @@ namespace WebAtividadeEntrevista.Controllers
                     CPF = model.CPF
                 });
 
-                if (beneficiarios != null)
+                if (model.Beneficiarios != null)
                 {
-                    foreach (var ben in beneficiarios)
+                    foreach (BeneficiarioModel beneficiario in model.Beneficiarios)
                     {
                         boBeneficiario.Incluir(new Beneficiario
                         {
                             IdCliente = model.Id,
-                            Nome = ben.Nome,
-                            CPF = ben.CPF
+                            Nome = beneficiario.Nome,
+                            CPF = beneficiario.CPF
                         });
                     }
                 }
-           
+       
                 return Json("Cadastro efetuado com sucesso");
             }
         }
 
         [HttpPost]
-        public JsonResult Alterar(ClienteModel model, List<BeneficiarioModel> beneficiarios)
+        public JsonResult Alterar(ClienteModel model)
         {
             BoCliente bo = new BoCliente();
             BoBeneficiario boBeneficiario = new BoBeneficiario();
@@ -92,7 +94,7 @@ namespace WebAtividadeEntrevista.Controllers
             }
             else
             {
-                if (bo.VerificarExistencia(model.CPF))
+                if (bo.VerificarExistencia(model.CPF, model.Id))
                 {
                     Response.StatusCode = 400;
                     return Json("CPF já cadastrado");
@@ -102,6 +104,7 @@ namespace WebAtividadeEntrevista.Controllers
                 {
                     Id = model.Id,
                     CEP = model.CEP,
+                    CPF = model.CPF,
                     Cidade = model.Cidade,
                     Email = model.Email,
                     Estado = model.Estado,
@@ -109,29 +112,30 @@ namespace WebAtividadeEntrevista.Controllers
                     Nacionalidade = model.Nacionalidade,
                     Nome = model.Nome,
                     Sobrenome = model.Sobrenome,
-                    Telefone = model.Telefone,
-                    CPF = model.CPF
+                    Telefone = model.Telefone
                 });
 
-                var beneficiariosAtuais = boBeneficiario.Listar(model.Id);
 
-                if (beneficiarios != null)
+                if (model.Beneficiarios != null)
                 {
-                    foreach (var ben in beneficiarios)
+                    List<Beneficiario> beneficiariosAtuais = boBeneficiario.Listar(model.Id);
+                    
+                    foreach (BeneficiarioModel beneficiario in model.Beneficiarios)
                     {
-                        var existente = beneficiariosAtuais.FirstOrDefault(b => b.CPF == ben.CPF);
+                        Beneficiario existente = beneficiariosAtuais.FirstOrDefault(b => b.CPF == beneficiario.CPF);
                         if (existente == null)
                         {
                             boBeneficiario.Incluir(new Beneficiario
                             {
                                 IdCliente = model.Id,
-                                Nome = ben.Nome,
-                                CPF = ben.CPF
+                                Nome = beneficiario.Nome,
+                                CPF = beneficiario.CPF
                             });
                         }
-                        else if (existente.Nome != ben.Nome)
+
+                        else if (existente.Nome != beneficiario.Nome)
                         {
-                            existente.Nome = ben.Nome;
+                            existente.Nome = beneficiario.Nome;
                             boBeneficiario.Alterar(existente);
                         }
                     }

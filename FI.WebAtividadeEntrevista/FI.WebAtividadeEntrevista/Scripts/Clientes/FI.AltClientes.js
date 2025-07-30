@@ -31,26 +31,12 @@
             ModalDialog("CPF inválido", "Por favor, informe um CPF válido.");
             return false;
         }
-        
-        let beneficiarios = getBeneficiariosData();
-
+        // Serializa todos os campos do form, incluindo beneficiários
+        var formData = $(this).serialize();
         $.ajax({
             url: urlPost,
             method: "POST",
-            data: {
-                "NOME": $(this).find("#Nome").val(),
-                "CEP": $(this).find("#CEP").val(),
-                "Email": $(this).find("#Email").val(),
-                "Sobrenome": $(this).find("#Sobrenome").val(),
-                "Nacionalidade": $(this).find("#Nacionalidade").val(),
-                "Estado": $(this).find("#Estado").val(),
-                "Cidade": $(this).find("#Cidade").val(),
-                "Logradouro": $(this).find("#Logradouro").val(),
-                "Telefone": $(this).find("#Telefone").val(),
-                "CPF": $(this).find("#CPF").val(),
-                "beneficiarios": beneficiarios,
-                "Id": $("#clientId").val()
-            },
+            data: formData,
             error:
             function (r) {
                 if (r.status == 400)
@@ -60,12 +46,12 @@
             },
             success:
             function (r) {
-                ModalDialog("Sucesso!", r)               
+                ModalDialog("Sucesso!", r)
                 window.location.href = urlRetorno;
             }
         });
-    })
-    
+    });
+
     if (typeof ViewBag !== 'undefined' && ViewBag.Beneficiarios) {
         ViewBag.Beneficiarios.forEach(function(ben) {
             let newRow = `<tr data-cpf="${ben.CPF}">

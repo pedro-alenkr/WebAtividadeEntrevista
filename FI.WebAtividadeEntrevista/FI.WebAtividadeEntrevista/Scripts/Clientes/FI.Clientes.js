@@ -18,25 +18,12 @@
             ModalDialog("CPF inválido", "Por favor, informe um CPF válido.");
             return false;
         }
-
-        let beneficiarios = getBeneficiariosData();
-
+        // Serializa todos os campos do form, incluindo beneficiários
+        var formData = $(this).serialize();
         $.ajax({
             url: urlPost,
             method: "POST",
-            data: {
-                "NOME": $(this).find("#Nome").val(),
-                "CEP": $(this).find("#CEP").val(),
-                "Email": $(this).find("#Email").val(),
-                "Sobrenome": $(this).find("#Sobrenome").val(),
-                "Nacionalidade": $(this).find("#Nacionalidade").val(),
-                "Estado": $(this).find("#Estado").val(),
-                "Cidade": $(this).find("#Cidade").val(),
-                "Logradouro": $(this).find("#Logradouro").val(),
-                "Telefone": $(this).find("#Telefone").val(),
-                "CPF": $(this).find("#CPF").val(),
-                "beneficiarios": beneficiarios
-            },
+            data: formData,
             error:
             function (r) {
                 if (r.status == 400)
@@ -48,21 +35,28 @@
             function (r) {
                 ModalDialog("Sucesso!", r)
                 $("#formCadastro")[0].reset();
+                // Remove beneficiários ocultos após sucesso
+                $("#formCadastro .beneficiario-hidden").remove();
             }
         });
-    })
-    
+    });
+
     if (typeof beneficiarios !== 'undefined' && beneficiarios) {
-        beneficiarios.forEach(function(ben) {
-            let newRow = `<tr data-cpf="${ben.CPF}>
+        beneficiarios.forEach(function(ben, i) {
+            let newRow = `<tr data-index="${i}">
                 <td>${ben.CPF}</td>
                 <td>${ben.Nome}</td>
                 <td>
-                    <button class="btn btn-sm btn-primary btn-alterar">Alterar</button>
                     <button class="btn btn-sm btn-danger btn-excluir">Excluir</button>
                 </td>
             </tr>`;
             $('#gridBeneficiarios tbody').append(newRow);
+            // Adiciona campos ocultos para edição
+            var hiddenFields = `
+                <input type="hidden" name="Beneficiarios[${i}].CPF" value="${ben.CPF}" />
+                <input type="hidden" name="Beneficiarios[${i}].Nome" value="${ben.Nome}" />
+            `;
+            $('#formCadastro').append(`<div class="beneficiario-hidden" data-index="${i}">${hiddenFields}</div>`);
         });
     }
-})
+});
