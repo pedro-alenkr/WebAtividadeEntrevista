@@ -1,4 +1,9 @@
 $(document).ready(function () {
+
+    $('#CPFBeneficiario').on('input', function () {
+        $(this).val(formatarCPF($(this).val()));
+    });
+
     var idCliente = 0;
     if (typeof obj !== 'undefined' && obj.Id > 0) {
         idCliente = obj.Id;
@@ -8,7 +13,7 @@ $(document).ready(function () {
         $('#gridBeneficiarios tbody').empty();
         $('#formCadastro .beneficiario-hidden').remove();
 
-        if (obj && obj.Beneficiarios && obj.Beneficiarios.length > 0) {
+        if (idCliente > 0 && obj.Beneficiarios && obj.Beneficiarios.length > 0) {
             obj.Beneficiarios.forEach(function (b, i) {
                 var cpf = b.CPF;
                 var nome = b.Nome;
@@ -33,10 +38,6 @@ $(document).ready(function () {
         }
     }
 
-    $('#CPFBeneficiario').on('input', function () {
-        $(this).val(formatarCPF($(this).val()));
-    });
-
     $('#formBeneficiario').submit(function (e) {
         e.preventDefault();
         var cpf = $('#CPFBeneficiario').val();
@@ -44,10 +45,6 @@ $(document).ready(function () {
 
         if (!validarCPF(cpf)) {
             ModalDialog("CPF invalido", "Por favor, informe um CPF valido.");
-            return;
-        }
-        if (!cpf || !nome) {
-            ModalDialog("Erro", "Preencha todos os campos!");
             return;
         }
 
